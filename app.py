@@ -14,7 +14,7 @@ modifiedStylesheetValue= [
     }
 ]
 
-csvFileCovidDataset = pd.read_csv('covid_19_clean_complete1.csv')
+csvFileCovidDataset = pd.read_csv('diseaseOutbreakData.csv')
 indianStatesFocus=pd.read_csv('IndividualDetails5.csv')
 
 entireValue=indianStatesFocus.shape[0]
