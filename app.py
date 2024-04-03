@@ -15,7 +15,7 @@ modifiedStylesheetValue= [
 ]
 
 csvFileCovidDataset = pd.read_csv('diseaseOutbreakData.csv')
-indianStatesFocus=pd.read_csv('IndividualDetails5.csv')
+indianStatesFocus=pd.read_csv('uniqueDataCity.csv')
 
 entireValue=indianStatesFocus.shape[0]
 hiddenValue=indianStatesFocus['current_status'].value_counts()
