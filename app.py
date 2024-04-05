@@ -1,18 +1,9 @@
 import pandas as pd
 import plotly.graph_objs as go
 import dash
-import dash_core_components as dcc
-import dash_html_components as html
+from dash import dcc
+from dash import html
 from dash.dependencies import Input, Output
-
-modifiedStylesheetValue= [
-    {
-        'href': 'https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css',
-        'rel': 'stylesheet',
-        'integrity': 'sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh',
-        'crossorigin': 'anonymous'
-    }
-]
 
 csvFileCovidDataset = pd.read_csv('diseaseOutbreakData.csv')
 indianStatesFocus=pd.read_csv('uniqueDataCity.csv')
@@ -59,7 +50,7 @@ indianStatesValue=[
 
 
 
-app = dash.Dash(__name__, external_stylesheets=modifiedStylesheetValue)
+app = dash.Dash(__name__)
 
 app.layout=html.Div([
     html.Div([
@@ -134,8 +125,8 @@ app.layout=html.Div([
                 html.Div([
                     html.Div([
                         html.Div([
-                            dcc.Graph(id='d_state',
-                                      figure={'data':[go.Bar(x=detectedStateValue['index'],y=detectedStateValue['detected_state'])],
+                            dcc.Graph(id='uniqueDataCity',
+                                      figure={'data':[go.Bar(x=indianStatesFocus['id'],y=indianStatesFocus['detected_state'])],
                                               'layout':go.Layout(title='No. of  case in Different state',xaxis={'title':'State'},yaxis={'title':'Number of patients'})})
                         ],className='card-body')
                     ],className='card')
@@ -171,11 +162,11 @@ app.layout=html.Div([
 @app.callback(Output('line','figure'), [Input('piker','value')])
 def update_graph(type):
     if type=='All':
-        hiddenValue = csvFileCovidDataset.groupby('Date')['Deaths'].max().sort_values(ascending=True).reset_index()
+        hiddenValue = detectedStateValue.groupby('Date')['Deaths'].max().sort_values(ascending=True).reset_index()
         return {'data':[go.Line(x=hiddenValue['Date'],y=hiddenValue['Deaths'])],
                 'layout':go.Layout(title='Number of Deaths Per Day',xaxis={'title':'Dates'},yaxis={'title':'Number of Deaths'},paper_bgcolor='rgba(0,0,0,1)',plot_bgcolor='rgba(0,0,0,1)')}
     else:
-        hiddenValue = csvFileCovidDataset[csvFileCovidDataset['Country/Region'] == type]
+        hiddenValue = detectedStateValue[csvFileCovidDataset['Country/Region'] == type]
         hiddenValues = hiddenValue.groupby('Date')['Deaths'].max().sort_values(ascending=True).reset_index()
         return {'data': [go.Line(x=hiddenValues['Date'], y=hiddenValues['Deaths'])],
                 'layout': go.Layout(title='Number of Deaths Per Day',xaxis={'title':'Dates'},yaxis={'title':'Number of Deaths'},paper_bgcolor='rgba(0,0,0,1)',plot_bgcolor='rgba(0,0,0,1)')}
@@ -185,12 +176,12 @@ def update_graph(type):
 def update_graph(secondInput):
     if secondInput=='All':
         hiddenValues=indianStatesFocus['detected_state'].value_counts().reset_index()
-        return {'data':[go.Line(x=hiddenValues['index'],y=hiddenValues['detected_state'])],
+        return {'data':[go.Line(x=hiddenValues['id'],y=hiddenValues['detected_state'])],
                 'layout':go.Layout(title='Number of Patients',xaxis={'title':'Number of Patients'},yaxis={'title':'states'})}
     else:
         indicatorCovid = indianStatesFocus[indianStatesFocus['current_status'] == secondInput]
         hiddenValueIterator = indicatorCovid['detected_state'].value_counts().reset_index()
-        return {'data': [go.Line(x=hiddenValueIterator['index'], y=hiddenValueIterator['detected_state'])],
+        return {'data': [go.Line(x=hiddenValueIterator['id'], y=hiddenValueIterator['detected_state'])],
                 'layout': go.Layout(title='Number of Patients',xaxis={'title':'Number of patients'},yaxis={'title':'States'})}
 
 
@@ -216,6 +207,5 @@ def update_graph(type2):
         covidCategoriesNames = ['Hospitalized', 'Recovered', 'Deceased']
         generatedDrawing= go.Figure(data=[go.Pie(labels=covidCategoriesNames, values=valueIndices)])
         return generatedDrawing
-
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server(host = '0.0.0.0', debug=False)
