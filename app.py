@@ -208,4 +208,4 @@ def update_graph(type2):
         generatedDrawing= go.Figure(data=[go.Pie(labels=covidCategoriesNames, values=valueIndices)])
         return generatedDrawing
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server(debug=False)
